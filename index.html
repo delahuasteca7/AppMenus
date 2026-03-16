@@ -8,15 +8,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
-    --bg: #0d0d0d;
-    --surface: #161616;
-    --surface2: #1f1f1f;
-    --border: #2a2a2a;
+    --bg: #ffffff;
+    --surface: #f9f9f9;
+    --surface2: #f0f0f0;
+    --border: #e0e0e0;
     --gold: #c9a84c;
     --gold-light: #e8c96a;
-    --cream: #f5f0e8;
-    --text: #e8e2d9;
-    --text-muted: #7a7268;
+    --cream: #1a1a1a;
+    --text: #333333;
+    --text-muted: #7a7a7a;
     --accent: #c9a84c;
     --red: #c0392b;
     --green: #27ae60;
@@ -140,7 +140,7 @@
     border-color: var(--gold);
   }
   textarea { resize: vertical; min-height: 80px; }
-  select option { background: #1a1a1a; }
+  select option { background: #ffffff; color: var(--text); }
 
   .btn {
     background: var(--gold);
@@ -342,7 +342,7 @@
   .preview-cover {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #1a1200, #0d0d0d);
+    background: linear-gradient(135deg, #f0f0f0, #ffffff);
     opacity: 0.9;
   }
   .preview-cover-img {
@@ -728,7 +728,7 @@
         </ol>
       </div>
       <div style="margin-top:16px;">
-        <button class="btn" onclick="showView('preview'); showView('preview')" style="width:100%;">Ver menú del cliente →</button>
+        <button class="btn" onclick="showView('preview')" style="width:100%;">Ver menú del cliente →</button>
       </div>
     </div>
   </div>
@@ -926,7 +926,7 @@ function renderCategories() {
   list.innerHTML = state.categories.map(c => `
     <div class="category-chip">
       <span>${c}</span>
-      <span class="del" onclick="removeCategory('${c}')">×</span>
+      <span class="del" onclick="removeCategory('${c.replace(/'/g, "\\'")}')">×</span>
     </div>`).join('');
   renderFilterBtns();
   renderItemCatSelect();
@@ -955,7 +955,7 @@ function removeCategory(cat) {
 function renderFilterBtns() {
   const el = document.getElementById('filter-cat-btns');
   el.innerHTML = state.categories.map(c =>
-    `<button class="btn btn-sm btn-outline" onclick="filterItems('${c}')">${c}</button>`
+    `<button class="btn btn-sm btn-outline" onclick="filterItems('${c.replace(/'/g, "\\'")}')">${c}</button>`
   ).join('');
 }
 
@@ -1130,7 +1130,7 @@ function updatePreview() {
   const catTabsEl = document.getElementById('prev-cats');
   catTabsEl.innerHTML = ['Todos', ...cats].map(c => `
     <div class="preview-cat-tab ${(c === 'Todos' && !activePreviewCat) || c === activePreviewCat ? 'active' : ''}"
-         onclick="setPreviewCat('${c}')">${c}</div>`).join('');
+         onclick="setPreviewCat('${c.replace(/'/g, "\\'")}')">${c}</div>`).join('');
 
   renderPreviewItems();
 }
@@ -1177,8 +1177,7 @@ function renderPreviewItems() {
 function generateQR() {
   const qrEl = document.getElementById('qrcode');
   qrEl.innerHTML = '';
-  const menuData = btoa(unescape(encodeURIComponent(JSON.stringify(state)))).substring(0, 200);
-  const url = `${window.location.href.split('?')[0]}?menu=${encodeURIComponent(state.biz.name)}`;
+  const url = `${window.location.href.split('?')[0]}?menu=${encodeURIComponent(state.biz.name || 'Mi Restaurante')}`;
   document.getElementById('qr-url-display').textContent = url;
   new QRCode(qrEl, { text: url, width: 200, height: 200, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
 }
